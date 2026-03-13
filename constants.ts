@@ -57,6 +57,10 @@ export const NAV_ITEMS: NavItem[] = [
     label: '요실금·성형센터',
     path: '/centers/incontinence-plastic'
   },
+  {
+    label: '국제진료센터',
+    path: '/international'
+  },
   { 
     label: '내과·종합검진센터', 
     path: '/medical/internal/national',
@@ -342,6 +346,24 @@ export const SPECIALIZED_CENTERS_DATA: Record<string, any> = {
       { name: "여성 성형 센터", detail: "질성형, 소음순 성형 등 기능적/미적 회복" }
     ],
     hours: "평일 09:00 - 18:00 | 토요일 09:00 - 13:00"
+  },
+  'international': {
+    title: "국제진료센터",
+    subtitle: "International Clinic for Foreign Patients",
+    intro: "언어 장벽 없는 편안한 진료, 다국어 통역 및 안내 시스템으로 외국인 방문객들도 안심하고 진료 및 출산할 수 있는 특화 센터입니다.",
+    features: [
+      "파파고 및 다누리콜센터 연계를 통한 24시간 실시간 무료 통역 지원",
+      "QR코드 기반 스마트폰 연동 원스톱 다국어 진료 안내",
+      "가장 큰 불안 요소인 '비용' 투명화: 안심 출산 가이드 제공",
+      "자국민 커뮤니티(Zalo, WeChat 등) 연계 및 입소문 후기 활동 혜택"
+    ],
+    departments: [
+      { name: "다국어 안내 서비스", detail: "원내 다국어 안내문 상시 비치, QR코드 스마트폰 확인, 파파고 및 전문 콜센터 통역 지원" },
+      { name: "안심 출산 투명 비용 가이드", detail: "건강보험 미/가입 시 예상 비용 등 진료비 및 출산 비용 투명 안내 원칙" },
+      { name: "365일 야간·휴일 응급 진료", detail: "성실하고 책임감 있는 원내 전문의 당직 진료로 커뮤니티 포용성 증대" },
+      { name: "외국인 특화 산모교실", detail: "다양한 문화권 산모들과의 공감대 형성, 원스톱 안내 및 시설 투어 제공" }
+    ],
+    hours: "평일 09:00 - 18:00 | 토요일 09:00 - 13:00 (응급 진료: 365일 24시간)"
   }
 };
 

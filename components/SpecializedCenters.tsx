@@ -4,6 +4,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { SPECIALIZED_CENTERS_DATA } from '../constants';
 import { Activity, Clock, ShieldCheck, Stethoscope, ChevronLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
 
+import { PageHero } from './PageHero';
+
 export const SpecializedCenters: React.FC = () => {
   const { centerId } = useParams<{ centerId: string }>();
   const navigate = useNavigate();
@@ -19,23 +21,22 @@ export const SpecializedCenters: React.FC = () => {
   }
 
   return (
-    <div className="pt-10 md:pt-20 pb-20 max-w-5xl mx-auto px-6 animate-fade-in-up">
-      <button 
-        onClick={() => navigate(-1)} 
-        className="flex items-center gap-2 text-brand-primary/60 font-black text-[11px] uppercase tracking-widest mb-10 hover:text-brand-primary transition-all group"
-      >
-        <ChevronLeft size={16} /> BACK TO PREVIOUS
-      </button>
+    <div className="bg-brand-light min-h-screen pb-20">
+      <PageHero 
+        category="Specialized Medical Center" 
+        title={center.title} 
+        description={center.subtitle} 
+        imageSrc={center.image || 'https://images.unsplash.com/photo-1543269865-cbf427effbad?auto=format&fit=crop&q=80&w=2000'}
+      />
+      <div className="max-w-5xl mx-auto px-6 animate-fade-in-up">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="flex items-center gap-2 text-brand-primary/60 font-black text-[11px] uppercase tracking-widest mb-10 hover:text-brand-primary transition-all group"
+        >
+          <ChevronLeft size={16} /> BACK TO PREVIOUS
+        </button>
 
-      <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-brand-primary/5">
-        {/* 히어로 헤더 */}
-        <div className="bg-brand-primary p-12 md:p-20 text-white text-center">
-          <span className="inline-block px-4 py-1 bg-white/10 rounded-full text-[9px] font-black uppercase tracking-[0.3em] mb-6">Specialized Medical Center</span>
-          <h1 className="serif-title text-3xl md:text-4xl font-bold mb-4 italic leading-tight">{center.title}</h1>
-          <p className="text-white/70 text-base md:text-lg font-bold max-w-xl mx-auto leading-relaxed">{center.subtitle}</p>
-        </div>
-
-        <div className="p-10 md:p-16 space-y-12">
+        <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-brand-primary/5 p-10 md:p-16 space-y-12">
           {/* 소개 섹션 */}
           <div className="bg-brand-light p-10 rounded-3xl border border-brand-primary/5">
             <p className="text-brand-primary/70 text-base md:text-lg leading-relaxed text-center font-bold">

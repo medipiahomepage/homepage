@@ -5,8 +5,8 @@ import { Menu, X, Phone, ChevronRight, MapPin, Clock, Heart, CheckCircle2, Arrow
 import { NAV_ITEMS, DOCTORS, SPECIALIZED_CENTERS_DATA, SUB_SERVICE_DETAILS, NOTICE_DATA, FACILITY_GALLERY, HOSPITAL_INFO, POSTPARTUM_PROGRAM, POSTPARTUM_MAIN_IMAGE, HOME_HERO_VIDEO, LOBBY_IMAGE_URL } from './constants';
 import { GeminiChat } from './components/GeminiChat';
 import { SpecializedCenters } from './components/SpecializedCenters';
-
-
+import { InternationalClinic } from './components/InternationalClinic';
+import { PageHero } from './components/PageHero';
 
 // -- Shared Components (Updated) --
 
@@ -126,14 +126,20 @@ const Header: React.FC = () => {
         </div>
         <div className="flex-1 overflow-y-auto px-8 py-10 space-y-8 no-scrollbar">
           {NAV_ITEMS.map((item) => (
-            <div key={item.label} className="space-y-4">
-              <h3 className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.2em]">{item.label}</h3>
+            <div key={item.label} className={item.children ? "space-y-4" : ""}>
+              {item.children && (
+                <h3 className="text-[10px] font-black text-brand-secondary uppercase tracking-[0.2em]">{item.label}</h3>
+              )}
               <div className="grid grid-cols-1 gap-4">
-                {item.children?.map((child) => (
-                  <button key={child.label} onClick={() => { child.path && navigate(child.path); setIsOpen(false); }} className="text-left text-xl font-bold text-brand-primary">
+                {item.children ? item.children.map((child) => (
+                  <button key={child.label} onClick={() => { child.path && navigate(child.path); setIsOpen(false); }} className="text-left text-xl font-bold text-brand-primary active-scale">
                     {child.label}
                   </button>
-                ))}
+                )) : (
+                  <button onClick={() => { item.path && navigate(item.path); setIsOpen(false); }} className="text-left text-xl font-bold text-brand-primary active-scale">
+                    {item.label}
+                  </button>
+                )}
               </div>
             </div>
           ))}
@@ -347,21 +353,7 @@ const PostpartumPage: React.FC = () => {
         );
       default:
         return (
-          <div className="animate-fade-in-up">
-            <div className="relative h-[60vh] lg:h-[70vh] rounded-[60px] overflow-hidden mb-24 shadow-2xl">
-              <img src={POSTPARTUM_MAIN_IMAGE} alt="Postpartum Care" className="w-full h-full object-cover brightness-[0.85]" />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-primary/60 via-transparent to-transparent"></div>
-              <div className="absolute bottom-16 left-12 lg:left-24 max-w-2xl text-white">
-                <span className="text-brand-secondary font-black text-[11px] tracking-[0.4em] uppercase mb-6 block">Heritage Haven Care</span>
-                <h2 className="serif-title text-4xl lg:text-6xl font-bold italic mb-8 leading-tight">
-                  생애 가장 아름다운<br />회복의 시간
-                </h2>
-                <p className="text-lg font-bold opacity-80 leading-relaxed">
-                  산모님의 온전한 휴식과 신생아의 안전을 위해 27년 의료 노하우를 집약했습니다. 메디피아 조리원은 단순한 휴식을 넘어 '건강한 가족의 시작'을 설계합니다.
-                </p>
-              </div>
-            </div>
-
+          <div className="animate-fade-in-up mt-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
               {[
                 { title: '의료진 밀착 협진', desc: '산부인과 & 소아과 전문의의 유기적인 회진 시스템을 통해 이상 징후를 조기에 발견하고 즉각 대응합니다.' },
@@ -380,9 +372,19 @@ const PostpartumPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-brand-light min-h-screen py-20 lg:py-32 px-6">
-      <div className="max-w-[1300px] mx-auto">
-        <div className="mb-20 flex gap-10 border-b border-brand-primary/5 pb-6 overflow-x-auto no-scrollbar">
+    <div className="bg-brand-light min-h-screen pb-20 lg:pb-32">
+      <PageHero 
+        category="Heritage Haven Care"
+        title={
+          <>
+            생애 가장 아름다운<br />회복의 시간
+          </>
+        }
+        description="산모님의 온전한 휴식과 신생아의 안전을 위해 27년 의료 노하우를 집약했습니다. 메디피아 조리원은 단순한 휴식을 넘어 '건강한 가족의 시작'을 설계합니다."
+        imageSrc={POSTPARTUM_MAIN_IMAGE}
+      />
+      <div className="max-w-[1300px] mx-auto px-6">
+        <div className="mb-20 flex gap-6 lg:gap-10 border-b border-brand-primary/5 pb-6 overflow-x-auto no-scrollbar">
          {['조리원 소개', '프로그램', '예약 및 비용 안내', '이용후기'].map((label, idx) => {
              const paths = ['/postpartum', '/postpartum/program', '/postpartum/rooms', '/postpartum/reviews'];
              const isActive = ((paths[idx] === '/postpartum' && !sub) || (sub && paths[idx].includes(sub)));
@@ -481,17 +483,8 @@ const BrandPage: React.FC = () => {
       default:
         return (
           <div className="space-y-12 lg:space-y-32">
-            <div className="animate-fade-in-up">
+            <div className="animate-fade-in-up mt-8">
               <div className="space-y-8 lg:space-y-12 max-w-3xl">
-                <div className="space-y-1 lg:space-y-4">
-                  <h3 className="text-3xl lg:text-[54px] font-bold text-brand-primary leading-tight tracking-tight">
-                    여성의 전 생애 주기를 위한
-                  </h3>
-                  <h3 className="text-3xl lg:text-[54px] font-bold text-brand-secondary leading-tight tracking-tight italic">
-                    가장 정교한 안식처
-                  </h3>
-                </div>
-                
                 <div className="space-y-6 lg:space-y-8 text-[16px] lg:text-[19px] font-medium text-brand-primary/80 text-justify leading-relaxed tracking-tight">
                   <p>안녕하십니까. 메디피아산부인과를 찾아주셔서 감사합니다.</p>
                   <p>1998년 개원 이후 27년이라는 시간 동안 저희는 생명의 경외심을 바탕으로 환자 한 분 한 분의 고귀한 삶을 존중해 왔습니다.</p>
@@ -539,8 +532,18 @@ const BrandPage: React.FC = () => {
   };
 
   return (
-    <div className="bg-brand-light min-h-screen py-10 lg:py-32 px-6">
-      <div className="max-w-[1300px] mx-auto">
+    <div className="bg-brand-light min-h-screen pb-10 lg:pb-32">
+      <PageHero 
+        category="Brand Story"
+        title={
+          <>
+            여성의 전 생애 주기를 위한<br />가장 정교한 안식처
+          </>
+        }
+        description="단순한 진료를 넘어 마음의 회복까지 돕는 인술 공간 메디피아입니다."
+        imageSrc={LOBBY_IMAGE_URL}
+      />
+      <div className="max-w-[1300px] mx-auto px-6">
         <div className="mb-10 lg:mb-20 flex gap-6 lg:gap-10 border-b border-brand-primary/5 pb-6 overflow-x-auto no-scrollbar">
            {['대표 인사말', '진료시간', '시설 안내', '오시는 길'].map((label, idx) => {
              const paths = ['/brand', '/brand/hours', '/brand/preview', '/brand/location'];
@@ -564,28 +567,18 @@ const MedicalStaffPage: React.FC = () => {
   return (
     <div className="bg-white min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-[40vh] lg:h-[50vh] w-full overflow-hidden bg-brand-primary">
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline 
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src={HOME_HERO_VIDEO} type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-black/20 z-10"></div>
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 h-full flex flex-col justify-center relative z-20">
-          <div className="animate-fade-in-up">
-            <span className="text-white/70 font-black text-[10px] tracking-[0.4em] uppercase mb-4 block">Medical Specialists</span>
-            <h1 className="serif-title text-4xl lg:text-5xl text-white font-black italic leading-tight hero-text-shadow">
-              품격 있는 진료를 위한<br />분야별 전문 의료진
-            </h1>
-          </div>
-        </div>
-      </section>
+      <PageHero 
+        category="Medical Specialists"
+        title={
+          <>
+            품격 있는 진료를 위한<br />분야별 전문 의료진
+          </>
+        }
+        description="메디피아의 27년 노하우를 이끄는 각 분야 전문가들을 소개합니다."
+        videoSrc={HOME_HERO_VIDEO}
+      />
 
-      <div className="max-w-[1300px] mx-auto py-20 lg:py-32 px-6">
+      <div className="max-w-[1300px] mx-auto pb-20 lg:pb-32 px-6">
 
         <div className="space-y-32">
           {DOCTORS.map((doc, idx) => (
@@ -630,21 +623,14 @@ const MedicalServicePage: React.FC = () => {
   if (!data) return <div className="py-40 text-center font-bold text-brand-primary/30 uppercase tracking-widest">Service Not Found</div>;
 
   return (
-    <div className="bg-brand-light min-h-screen py-20 lg:py-32 px-6">
-      <div className="max-w-[1100px] mx-auto space-y-24">
-        {data.image && (
-          <div className="w-full aspect-[21/9] rounded-[48px] overflow-hidden shadow-2xl border border-brand-primary/5">
-            <img src={data.image} alt={data.title} className="w-full h-full object-cover" />
-          </div>
-        )}
-        
-        <div className="text-center space-y-8 animate-fade-in-up">
-          <span className="text-brand-secondary font-black text-[11px] tracking-[0.4em] uppercase">{data.category}</span>
-          <h2 className="serif-title text-4xl lg:text-5xl font-bold text-brand-primary italic leading-tight">{data.title}</h2>
-          <div className="h-0.5 w-16 bg-brand-secondary mx-auto"></div>
-          <p className="max-w-3xl mx-auto text-brand-primary/60 font-bold text-lg leading-relaxed">{data.intro}</p>
-        </div>
-
+    <div className="bg-brand-light min-h-screen pb-20 lg:pb-32">
+      <PageHero 
+        category={data.category}
+        title={data.title}
+        description={data.intro}
+        imageSrc={data.image || LOBBY_IMAGE_URL}
+      />
+      <div className="max-w-[1100px] mx-auto space-y-24 px-6 animate-fade-in-up">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
           {data.items.map((item: any, i: number) => (
             <div key={i} className="bg-white p-12 rounded-[48px] border border-brand-primary/5 shadow-xl hover:-translate-y-2 transition-transform duration-500">
@@ -791,6 +777,7 @@ const App: React.FC = () => {
             <Route path="/reservation" element={<ReservationPage />} />
             <Route path="/community" element={<CommunityPage />} />
             <Route path="/centers/:centerId" element={<SpecializedCenters />} />
+            <Route path="/international" element={<InternationalClinic />} />
           </Routes>
         </main>
         

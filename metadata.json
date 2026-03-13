@@ -1,0 +1,8 @@
+{
+  "name": "Copy of MEDIPIA HOMEPAGE(N-1)",
+  "description": "A premium OB/GYN & Postpartum Care Center website focusing on medical authority and high-end hospitality.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

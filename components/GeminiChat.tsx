@@ -66,9 +66,10 @@ export const GeminiChat: React.FC = () => {
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-10 right-10 z-[80] bg-brand-primary text-brand-secondary p-5 rounded-full shadow-2xl hover:scale-110 transition-all duration-300 ${isOpen ? 'hidden' : 'flex'}`}
+        className={`fixed bottom-[100px] md:bottom-10 right-6 md:right-10 z-[80] bg-brand-primary text-white px-5 py-3.5 rounded-full shadow-2xl hover:scale-105 transition-all duration-300 ${isOpen ? 'hidden' : 'flex'} items-center gap-2`}
       >
-        <Sparkles size={28} strokeWidth={1.5} />
+        <Sparkles size={20} strokeWidth={1.5} className="text-brand-secondary" />
+        <span className="text-[13px] font-bold tracking-wide">AI 상담</span>
       </button>
 
       {isOpen && (

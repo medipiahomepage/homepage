@@ -52,7 +52,7 @@ ${HOSPITAL_CONTEXT}
 
 export const sendMessageToGemini = async (message: string, history: ChatMessage[]): Promise<string> => {
   try {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+    const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
     
     if (!apiKey) {
       // API 키가 없을 때의 임시(Mock) 응답 로직
@@ -74,7 +74,7 @@ export const sendMessageToGemini = async (message: string, history: ChatMessage[
     });
 
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.5-flash',
       contents,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { SPECIALIZED_CENTERS_DATA } from '../constants';
-import { Activity, Clock, ShieldCheck, Stethoscope, ChevronLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Activity, Clock, ShieldCheck, Stethoscope, ChevronLeft, ArrowRight, CheckCircle2, Info } from 'lucide-react';
 
 import { PageHero } from './PageHero';
 
@@ -102,6 +102,61 @@ export const SpecializedCenters: React.FC = () => {
             </div>
           </div>
         </div>
+        
+        {/* 안내 정보 박스 렌더링 */}
+        {center.infoBox && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-12">
+            {center.infoBox.map((box: any, i: number) => (
+              <div key={i} className="bg-white rounded-[20px] md:rounded-[28px] border border-brand-primary/5 shadow-lg p-5 md:p-8 hover-glow">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-8 h-8 rounded-full bg-brand-secondary/10 flex items-center justify-center">
+                    <Info size={16} className="text-brand-secondary" />
+                  </span>
+                  <h4 className="font-bold text-brand-primary text-[15px] md:text-[16px]">{box.title}</h4>
+                </div>
+                <ul className="space-y-2.5">
+                  {box.contents.map((content: string, j: number) => (
+                    <li key={j} className="flex items-start gap-2.5 text-[14px] md:text-[15px] font-medium text-brand-primary/75 leading-[1.7]">
+                      <CheckCircle2 size={16} className="text-brand-secondary mt-0.5 shrink-0" />
+                      <span>{content}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* 검진 항목 테이블 렌더링 */}
+        {center.checkupTable && (
+          <div className="bg-white rounded-[20px] md:rounded-[40px] border border-brand-primary/5 shadow-xl overflow-hidden hover-glow mt-12">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse premium-table">
+                <thead>
+                  <tr>
+                    <th className="p-4 md:p-6 text-[13px] md:text-[15px] font-bold border-b border-white/10 whitespace-nowrap tracking-wide">검진 항목</th>
+                    <th className="p-4 md:p-6 text-[13px] md:text-[15px] font-bold border-b border-white/10 tracking-wide">상세 내용</th>
+                    {center.checkupTable[0]?.cycle && <th className="p-4 md:p-6 text-[13px] md:text-[15px] font-bold border-b border-white/10 whitespace-nowrap tracking-wide">주기</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {center.checkupTable.map((row: any, i: number) => (
+                    <tr key={i} className="border-b border-brand-primary/5 last:border-0 transition-colors duration-200">
+                      <td className="p-4 md:p-6 text-[14px] md:text-[15px] font-bold text-brand-primary align-top whitespace-pre-line">
+                        <div className="flex items-start gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-brand-secondary mt-1.5 shrink-0" />
+                          {row.name || row.category}
+                        </div>
+                      </td>
+                      <td className="p-4 md:p-6 text-[14px] md:text-[15px] font-medium text-brand-primary/80 align-top whitespace-pre-line leading-[1.8]">{row.target || row.items}</td>
+                      {row.cycle && <td className="p-4 md:p-6 text-[14px] md:text-[15px] align-top whitespace-pre-line"><span className="inline-block px-3 py-1 bg-brand-light text-brand-secondary font-bold rounded-full text-[13px]">{row.cycle}</span></td>}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
         
         {/* 하단 배너 */}
         <div className="bg-brand-light py-8 px-8 text-center border-t border-brand-primary/5">

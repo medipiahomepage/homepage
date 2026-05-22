@@ -3,28 +3,72 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
     <title>메디피아산부인과 | MEDIPIA OB & GYN</title>
+    
+    <!-- SNS 공유용 메타 태그 (Open Graph) -->
+    <meta property="og:title" content="메디피아산부인과 | MEDIPIA OB & GYN" />
+    <meta property="og:description" content="여성의 가장 고귀한 순간을 함께 합니다. 남양주 여성 건강 전문 클리닉 메디피아산부인과" />
+    <meta property="og:image" content="https://medipiahomepage.web.app/images/hero_bg.png" />
+    <meta property="og:url" content="https://medipiahomepage.web.app" />
+    <meta property="og:type" content="website" />
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Google Fonts: 포스터 기반 세리프 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
-              sans: ['Pretendard', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'Roboto', '"Helvetica Neue"', '"Segoe UI"', '"Apple SD Gothic Neo"', '"Noto Sans KR"', '"Malgun Gothic"', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"', 'sans-serif'],
-              serif: ['"Playfair Display"', 'serif'],
+              sans: ['"Noto Sans KR"', 'system-ui', '-apple-system', 'BlinkMacSystemFont', '"Roboto"', '"Helvetica Neue"', 'Arial', 'sans-serif'],
+              serif: ['"Nanum Myeongjo"', '"Cormorant Garamond"', 'Georgia', 'serif'],
+              display: ['"Cormorant Garamond"', '"Nanum Myeongjo"', 'Georgia', 'serif'],
             },
             colors: {
               brand: {
-                primary: '#000000', 
-                secondary: '#85693E', 
-                light: '#FFFFFF',
-                accent: '#BCB1A1', 
-                dark: '#000000',
+                primary: '#4A3C32',
+                secondary: '#B8956A',
+                light: '#F5F0EB',
+                accent: '#9E8E7E',
+                muted: '#C9B9A8',
+                pale: '#EDE8E3',
+                warm: '#F0EAE4',
+                cream: '#FAF7F3',
+                rose: '#A89078',
+                darkBg: '#1c1a17',
+                darkCard: '#2a2620',
+                darkText: '#EAE5DF',
+                darkMuted: '#9B918A',
               }
-            }
+            },
+            animation: {
+              'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+              'slide-in-left': 'slideInLeft 0.5s cubic-bezier(0.16,1,0.3,1) forwards',
+              'shimmer': 'shimmer 2s infinite linear',
+              'float': 'float 6s ease-in-out infinite',
+            },
+            keyframes: {
+              fadeInUp: {
+                from: { opacity: '0', transform: 'translateY(30px)' },
+                to: { opacity: '1', transform: 'translateY(0)' },
+              },
+              slideInLeft: {
+                from: { opacity: '0', transform: 'translateX(-40px)' },
+                to: { opacity: '1', transform: 'translateX(0)' },
+              },
+              shimmer: {
+                '0%': { backgroundPosition: '-200% 0' },
+                '100%': { backgroundPosition: '200% 0' },
+              },
+              float: {
+                '0%, 100%': { transform: 'translateY(0px)' },
+                '50%': { transform: 'translateY(-8px)' },
+              },
+            },
           }
         }
       }
@@ -32,6 +76,14 @@
     <style>
       .no-scrollbar::-webkit-scrollbar { display: none; }
       .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+      /* 마이크로 인터랙션: 버튼 리플 효과 */
+      @keyframes btnRipple {
+        0% { transform: scale(0.97); opacity: 0.7; }
+        50% { transform: scale(1.01); opacity: 1; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .btn-ripple:active { animation: btnRipple 0.25s ease-out; }
       
       @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(30px); }
@@ -39,44 +91,203 @@
       }
       .animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
       
+      /* =============================================
+         폰트 크기 체계
+         - hero-title:     36~48px / Apple SF Pro Display / weight 600~700
+         - section-title:  26~36px / Apple SF Pro Display / weight 600
+         - heading-3:      18~22px / Apple SF Pro Text / weight 600
+         - body-large:     16~17px / Apple SF Pro Text / weight 400
+         - body:           14~15px / Apple SF Pro Text / weight 400
+         - caption:        11~13px / Apple SF Pro Text / weight 300
+         - label-eng:      10~11px / Apple SF Pro Text / weight 300, 자간 넓음
+         ============================================= */
       body { 
         word-break: keep-all; 
         overflow-wrap: break-word;
-        font-family: "Pretendard", sans-serif;
-        background-color: #FFFFFF;
-        color: #000000;
-        line-height: 1.8;
-        font-size: 16px; 
+        font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        background-color: #F5F0EB;
+        color: #4A3C32;
+        line-height: 1.65;
+        font-size: 15px;
+        font-stretch: 95%;
+        letter-spacing: -0.02em;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        transition: background-color 0.4s ease, color 0.4s ease;
+      }
+
+
+      /* 장평 95% 강제 적용 유틸리티 클래스 */
+      .scale-typography { display: inline-block; transform: scaleX(0.95); transform-origin: center; }
+      .scale-typography-left { display: inline-block; transform: scaleX(0.95); transform-origin: left; }
+
+      h1, h2, h3, h4, h5, h6 {
+        letter-spacing: -0.02em;
+        line-height: 1.4;
       }
 
       .serif-title {
-        font-family: "Playfair Display", serif;
+        font-family: 'Nanum Myeongjo', 'Cormorant Garamond', Georgia, serif;
+        font-weight: 400;
         letter-spacing: -0.02em;
+        word-break: keep-all;
       }
 
+      .nanum-gothic {
+        font-family: 'Noto Sans KR', system-ui, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        font-size: 18px;
+      }
+
+      /* 영문 레이블 - Cormorant Garamond, 얇고 자간 넓음 */
+      .section-eng-label {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 12px;
+        font-weight: 400;
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: #9E8E7E;
+      }
+
+      /* 탭 언더라인 - 연한 로즈 핑크 */
+      .tab-active-line {
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: #A89078;  /* 웜 더스티 토프 */
+      }
+
+      /* 사이드 메뉴 오버레이 */
+      .side-menu-overlay {
+        background: rgba(61,53,53,0.4);
+        backdrop-filter: blur(4px);
+      }
+
+      /* 홈 섹션 구분선 */
+      .section-divider {
+        width: 32px;
+        height: 1px;
+        background: #A89078;  /* 웜 더스티 토프 */
+        margin: 14px auto;
+      }
+
+      /* 카드 호버 효과 */
+      .service-card {
+        transition: transform 0.5s cubic-bezier(0.16,1,0.3,1), box-shadow 0.5s ease;
+        background-color: rgba(245,240,235,0.85); /* 웜 크림 틴트 카드 */
+      }
+      .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 16px 48px rgba(184,149,106,0.15);  /* 웜 골드 그림자 */
+      }
+
+      @keyframes slideInLeft {
+        from { opacity: 0; transform: translateX(-40px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+      .animate-slide-in-left { animation: slideInLeft 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+      /* 헤더 - 웜 크림 배경 */
       .glass-nav {
-        background: rgba(255, 255, 255, 0.98);
+        background: rgba(245, 240, 235, 0.97);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(168,144,120,0.12);
       }
 
-      /* 텍스트 선명도 개선을 위한 강화된 그림자 */
       .hero-text-shadow {
-        text-shadow: 0 4px 30px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.5);
+        text-shadow: 0 4px 30px rgba(74,60,50,0.8), 0 0 10px rgba(0,0,0,0.4);
       }
       
       .strong-shadow {
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+        text-shadow: 0 2px 10px rgba(74,60,50,0.8);
       }
 
+      /* 하이라이트 텍스트 - 메인 화면 고귀한 순간 강조 */
       .noble-moment-highlight {
-        color: #C5A46D;
+        color: #FAAB05;
+        font-weight: 800;
+        text-shadow: 0 2px 20px rgba(250,171,5,0.5), 0 0 40px rgba(255,255,255,0.3);
       }
 
-      .font-black { font-weight: 900 !important; }
+      .font-black { font-weight: 700 !important; }
+
+      /* 01/02/03 숫자 - Cormorant Garamond thin */
+      .item-number {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-size: 22px;
+        font-weight: 300;
+        color: #C0B0A0;
+        letter-spacing: 0.05em;
+      }
+
+      /* 강조 텍스트 */
+      .text-emphasis {
+        color: #B8956A;
+        font-weight: 500;
+      }
+
+      /* 하단 고정 바 - 왼쪽 웜 골드, 오른쪽 모카 브라운 */
+      .bottom-action-bar {
+        background: linear-gradient(135deg, #B8956A 0%, #4A3C32 100%);
+      }
       
       @media (max-width: 768px) {
         .mobile-syllable-break { word-break: break-all !important; }
+      }
+
+      /* ==============================================
+         모바일 풀페이지 스크롤 스냅
+         html.home-snap 클래스가 있을 때만 활성화
+         (홈 페이지 진입 시 추가, 이탈 시 제거)
+         ============================================== */
+      @media (max-width: 768px) {
+        html.home-snap {
+          scroll-snap-type: y proximity;
+          scroll-behavior: smooth;
+        }
+
+        /* 각 섹션 스냅 포인트 */
+        .snap-section {
+          scroll-snap-align: start;
+          scroll-snap-stop: always;
+          scroll-margin-top: 64px; /* sticky 헤더 높이 보정 */
+        }
+
+        /* 히어로: 헤더 없이 최상단 */
+        .snap-hero {
+          scroll-snap-align: start;
+          scroll-snap-stop: always;
+          scroll-margin-top: 0;
+        }
+
+        /* 스크롤 위치 인디케이터 */
+        .snap-indicator {
+          position: fixed;
+          right: 14px;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 50;
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          pointer-events: none;
+        }
+        .snap-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: rgba(168,144,120,0.35);
+          transition: all 0.35s ease;
+        }
+        .snap-dot.active {
+          background: #A89078;
+          height: 18px;
+          border-radius: 3px;
+        }
       }
     </style>
   <script type="importmap">

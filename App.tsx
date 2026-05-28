@@ -12,6 +12,7 @@ import { AdminPage } from './components/AdminPage';
 import { PopupManager } from './components/PopupManager';
 import { ConsultationPage } from './components/ConsultationPage';
 import { ReviewBoard } from './components/ReviewBoard';
+import { SEO } from './components/SEO';
 import { db } from './lib/firebase';
 import { collection, query, orderBy, getDocs, where } from 'firebase/firestore';
 import { Notice, Doctor } from './types';
@@ -2160,6 +2161,11 @@ const MedicalStaffPage: React.FC = () => {
   const DOCTORS = useDoctors();
   return (
     <div className="bg-white min-h-screen">
+      <SEO 
+        title="메디피아 - 의료진 소개" 
+        description="메디피아의 27년 노하우를 이끄는 각 분야 전문가들을 소개합니다." 
+        url="https://medipiahomepage.web.app/medical/staff" 
+      />
       <PageHero 
         category="Medical Specialists"
         title={

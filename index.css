@@ -28,6 +28,27 @@ body {
   letter-spacing: -0.05em;
 }
 
+/* React Quill 콘텐츠 스타일 (에디터 출력물 반응형 보정) */
+.quill-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+}
+.quill-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+.quill-content table td, .quill-content table th {
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem;
+}
+.quill-content a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
 ::selection {
   background: rgba(223, 139, 172, 0.25);
   color: #3D3535;

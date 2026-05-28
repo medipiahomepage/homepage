@@ -4,15 +4,17 @@ import { auth, db, storage } from '../lib/firebase';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged, User } from 'firebase/auth';
 import { collection, query, orderBy, onSnapshot, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Notice, Popup } from '../types';
+import { Notice, Popup, Consultation, Review } from '../types';
 import { LogOut, Plus, Edit2, Trash2, Image as ImageIcon, X } from 'lucide-react';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 export const AdminPage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'notices' | 'popups'>('notices');
+  const [activeTab, setActiveTab] = useState<'notices' | 'popups' | 'consultations' | 'reviews'>('notices');
   const navigate = useNavigate();
 
   // Notices State
@@ -23,6 +25,10 @@ export const AdminPage: React.FC = () => {
   const [popups, setPopups] = useState<Popup[]>([]);
   const [editingPopup, setEditingPopup] = useState<Partial<Popup> | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+
+  // Consultations & Reviews State
+  const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -45,9 +51,21 @@ export const AdminPage: React.FC = () => {
       setPopups(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Popup)));
     });
 
+    const consultationsQuery = query(collection(db, 'consultations'), orderBy('createdAt', 'desc'));
+    const unsubscribeConsultations = onSnapshot(consultationsQuery, (snapshot) => {
+      setConsultations(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Consultation)));
+    });
+
+    const reviewsQuery = query(collection(db, 'postpartum_reviews'), orderBy('createdAt', 'desc'));
+    const unsubscribeReviews = onSnapshot(reviewsQuery, (snapshot) => {
+      setReviews(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Review)));
+    });
+
     return () => {
       unsubscribeNotices();
       unsubscribePopups();
+      unsubscribeConsultations();
+      unsubscribeReviews();
     };
   }, [user]);
 
@@ -63,6 +81,53 @@ export const AdminPage: React.FC = () => {
   const handleLogout = async () => {
     await signOut(auth);
   };
+
+  // --- React Quill 설정 (공지사항 에디터) ---
+  const quillRef = React.useRef<ReactQuill>(null);
+
+  const imageHandler = React.useCallback(() => {
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
+
+    input.onchange = async () => {
+      const file = input.files ? input.files[0] : null;
+      if (!file) return;
+
+      const storageRef = ref(storage, `notices/${Date.now()}_${file.name}`);
+      try {
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+        
+        const quill = quillRef.current?.getEditor();
+        if (quill) {
+          const range = quill.getSelection(true);
+          quill.insertEmbed(range.index, 'image', url);
+        }
+      } catch (error) {
+        console.error('Image upload failed', error);
+        alert('이미지 업로드에 실패했습니다.');
+      }
+    };
+  }, []);
+
+  const quillModules = React.useMemo(() => ({
+    toolbar: {
+      container: [
+        [{ 'header': [1, 2, 3, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ 'color': [] }, { 'background': [] }],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        [{ 'align': [] }],
+        ['link', 'image', 'video'],
+        ['clean']
+      ],
+      handlers: {
+        image: imageHandler
+      }
+    }
+  }), [imageHandler]);
 
   // --- Notice Actions ---
   const saveNotice = async (e: React.FormEvent) => {
@@ -145,8 +210,27 @@ export const AdminPage: React.FC = () => {
   };
 
   const deletePopup = async (id: string) => {
-    if (window.confirm('정말 삭제하시겠습니까?')) {
+    if (window.confirm('정말 이 팝업을 삭제하시겠습니까?')) {
       await deleteDoc(doc(db, 'popups', id));
+    }
+  };
+
+  // --- Consultation Actions ---
+  const toggleConsultationStatus = async (consultation: Consultation) => {
+    const newStatus = consultation.status === '대기중' ? '답변완료' : '대기중';
+    await updateDoc(doc(db, 'consultations', consultation.id), { status: newStatus });
+  };
+
+  const deleteConsultation = async (id: string) => {
+    if (window.confirm('정말 이 상담 내역을 삭제하시겠습니까?')) {
+      await deleteDoc(doc(db, 'consultations', id));
+    }
+  };
+
+  // --- Review Actions ---
+  const deleteReview = async (id: string) => {
+    if (window.confirm('정말 이 후기를 삭제하시겠습니까? (관리자 권한)')) {
+      await deleteDoc(doc(db, 'postpartum_reviews', id));
     }
   };
 
@@ -191,15 +275,27 @@ export const AdminPage: React.FC = () => {
         <div className="flex gap-4 mb-6">
           <button 
             onClick={() => setActiveTab('notices')} 
-            className={`px-6 py-3 rounded-xl font-bold transition-colors ${activeTab === 'notices' ? 'bg-brand-primary text-white shadow-md' : 'bg-white text-brand-primary/60 hover:bg-gray-50'}`}
+            className={`px-6 py-3 rounded-xl font-bold transition-colors whitespace-nowrap ${activeTab === 'notices' ? 'bg-brand-primary text-white shadow-md' : 'bg-white text-brand-primary/60 hover:bg-gray-50'}`}
           >
             공지사항 관리
           </button>
           <button 
             onClick={() => setActiveTab('popups')} 
-            className={`px-6 py-3 rounded-xl font-bold transition-colors ${activeTab === 'popups' ? 'bg-brand-primary text-white shadow-md' : 'bg-white text-brand-primary/60 hover:bg-gray-50'}`}
+            className={`px-6 py-3 rounded-xl font-bold transition-colors whitespace-nowrap ${activeTab === 'popups' ? 'bg-brand-primary text-white shadow-md' : 'bg-white text-brand-primary/60 hover:bg-gray-50'}`}
           >
             팝업 관리
+          </button>
+          <button 
+            onClick={() => setActiveTab('consultations')} 
+            className={`px-6 py-3 rounded-xl font-bold transition-colors whitespace-nowrap ${activeTab === 'consultations' ? 'bg-brand-primary text-white shadow-md' : 'bg-white text-brand-primary/60 hover:bg-gray-50'}`}
+          >
+            상담 내역 관리
+          </button>
+          <button 
+            onClick={() => setActiveTab('reviews')} 
+            className={`px-6 py-3 rounded-xl font-bold transition-colors whitespace-nowrap ${activeTab === 'reviews' ? 'bg-brand-primary text-white shadow-md' : 'bg-white text-brand-primary/60 hover:bg-gray-50'}`}
+          >
+            조리원 후기 관리
           </button>
         </div>
 
@@ -256,7 +352,16 @@ export const AdminPage: React.FC = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-bold mb-1">내용</label>
-                    <textarea value={editingNotice.content || ''} onChange={e => setEditingNotice({...editingNotice, content: e.target.value})} className="w-full border rounded-lg px-4 py-2 h-48" required></textarea>
+                    <div className="bg-white">
+                      <ReactQuill 
+                        ref={quillRef}
+                        theme="snow"
+                        value={editingNotice.content || ''} 
+                        onChange={(content) => setEditingNotice({...editingNotice, content})} 
+                        modules={quillModules}
+                        className="h-64 mb-12"
+                      />
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     <input type="checkbox" id="isVisible" checked={editingNotice.isVisible !== false} onChange={e => setEditingNotice({...editingNotice, isVisible: e.target.checked})} className="w-4 h-4" />
@@ -357,6 +462,89 @@ export const AdminPage: React.FC = () => {
                 </form>
               </div>
             )}
+          </div>
+        )}
+
+        {activeTab === 'consultations' && (
+          <div className="bg-white rounded-2xl shadow-sm border border-brand-primary/10 p-6">
+            <h2 className="text-lg font-black text-brand-primary mb-6">상담 내역 관리</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-brand-primary/10">
+                    <th className="py-3 px-4 font-bold text-brand-primary/70">상태</th>
+                    <th className="py-3 px-4 font-bold text-brand-primary/70">작성자</th>
+                    <th className="py-3 px-4 font-bold text-brand-primary/70 min-w-[300px]">내용</th>
+                    <th className="py-3 px-4 font-bold text-brand-primary/70">비밀번호</th>
+                    <th className="py-3 px-4 font-bold text-brand-primary/70">작성일</th>
+                    <th className="py-3 px-4 text-right font-bold text-brand-primary/70">관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {consultations.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-8 text-brand-primary/50">등록된 상담이 없습니다.</td></tr>
+                  ) : consultations.map((item) => (
+                    <tr key={item.id} className="border-b border-brand-primary/5 hover:bg-brand-light/30 transition-colors">
+                      <td className="py-4 px-4">
+                        <button 
+                          onClick={() => toggleConsultationStatus(item)}
+                          className={`px-3 py-1 rounded-full text-[12px] font-bold ${item.status === '답변완료' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}
+                        >
+                          {item.status}
+                        </button>
+                      </td>
+                      <td className="py-4 px-4 font-bold">{item.nickname}</td>
+                      <td className="py-4 px-4 text-sm whitespace-pre-line">{item.content}</td>
+                      <td className="py-4 px-4 text-sm font-mono text-gray-500">{item.password || '-'}</td>
+                      <td className="py-4 px-4 text-sm text-brand-primary/60">{item.createdAt?.toDate?.().toLocaleDateString() || ''}</td>
+                      <td className="py-4 px-4 text-right space-x-2">
+                        <button onClick={() => deleteConsultation(item.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="삭제">
+                          <Trash2 size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'reviews' && (
+          <div className="bg-white rounded-2xl shadow-sm border border-brand-primary/10 p-6">
+            <h2 className="text-lg font-black text-brand-primary mb-6">조리원 후기 관리 (전체)</h2>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-brand-primary/10">
+                    <th className="py-3 px-4 font-bold text-brand-primary/70">평점</th>
+                    <th className="py-3 px-4 font-bold text-brand-primary/70">작성자</th>
+                    <th className="py-3 px-4 font-bold text-brand-primary/70">이용시기</th>
+                    <th className="py-3 px-4 font-bold text-brand-primary/70 min-w-[300px]">내용</th>
+                    <th className="py-3 px-4 font-bold text-brand-primary/70">작성일</th>
+                    <th className="py-3 px-4 text-right font-bold text-brand-primary/70">관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reviews.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-8 text-brand-primary/50">등록된 후기가 없습니다.</td></tr>
+                  ) : reviews.map((item) => (
+                    <tr key={item.id} className="border-b border-brand-primary/5 hover:bg-brand-light/30 transition-colors">
+                      <td className="py-4 px-4 text-yellow-500 font-black">{'★'.repeat(item.rating)}</td>
+                      <td className="py-4 px-4 font-bold">{item.name}</td>
+                      <td className="py-4 px-4 text-sm text-brand-primary/60">{item.period}</td>
+                      <td className="py-4 px-4 text-sm whitespace-pre-line">{item.content}</td>
+                      <td className="py-4 px-4 text-sm text-brand-primary/60">{item.createdAt?.toDate?.().toLocaleDateString() || ''}</td>
+                      <td className="py-4 px-4 text-right">
+                        <button onClick={() => deleteReview(item.id)} className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="삭제">
+                          <Trash2 size={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </div>

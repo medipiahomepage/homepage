@@ -58,3 +58,22 @@ export interface Popup {
   createdAt: any;
   updatedAt: any;
 }
+
+export interface Consultation {
+  id: string;
+  nickname: string;
+  password?: string;
+  content: string;
+  status: '대기중' | '답변완료';
+  createdAt: any;
+}
+
+export interface Review {
+  id: string;
+  name: string;
+  password?: string;
+  period: string;
+  content: string;
+  rating: number;
+  createdAt: any;
+}

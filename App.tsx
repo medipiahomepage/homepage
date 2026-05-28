@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { HashRouter, Routes, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Menu, X, Phone, ChevronRight, MapPin, Clock, Heart, CheckCircle2, ArrowRight, Zap, Camera, Bus, Car, Baby, Info, Calendar } from 'lucide-react';
 import { NAV_ITEMS, DOCTORS as DOCTORS_FALLBACK, SPECIALIZED_CENTERS_DATA, SUB_SERVICE_DETAILS, NOTICE_DATA, FACILITY_GALLERY, HOSPITAL_INFO, POSTPARTUM_PROGRAM, POSTPARTUM_MAIN_IMAGE, HOME_HERO_VIDEO, LOBBY_IMAGE_URL } from './constants';
 import { GeminiChat } from './components/GeminiChat';
@@ -2349,7 +2349,10 @@ const CommunityPage: React.FC = () => {
                 <div className="space-y-3">
                   <span className="text-[10px] font-black text-brand-secondary uppercase tracking-widest">{item.createdAt?.toDate?.().toLocaleDateString() || ''}</span>
                   <h3 className="text-base md:text-xl font-black text-brand-primary group-hover:text-brand-secondary transition-colors">{item.title}</h3>
-                  <p className="text-brand-primary/50 font-bold text-sm leading-relaxed max-w-2xl whitespace-pre-line">{item.content}</p>
+                  <div 
+                    className="text-brand-primary/80 font-medium text-sm leading-relaxed max-w-3xl quill-content" 
+                    dangerouslySetInnerHTML={{ __html: item.content }}
+                  />
                 </div>
               </div>
             ))
@@ -2375,7 +2378,7 @@ const ScrollToTop: React.FC = () => {
   return null;
 };
 
-// ── 푸터 컴포넌트 (navigate를 위해 HashRouter 내부에서 분리) ──
+// ── 푸터 컴포넌트 (navigate를 위해 BrowserRouter 내부에서 분리) ──
 const SiteFooter: React.FC = () => {
   const navigate = useNavigate();
   return (
@@ -2424,7 +2427,7 @@ const SiteFooter: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <HashRouter>
+    <BrowserRouter>
       <ScrollToTop />
       <PopupManager />
       {/* 전체 배경: 크리미 페일 핑크 (#FDF5F5) */}
@@ -2457,7 +2460,7 @@ const App: React.FC = () => {
         
         <GeminiChat />
       </div>
-    </HashRouter>
+    </BrowserRouter>
   );
 };
 

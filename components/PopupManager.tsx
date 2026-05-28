@@ -9,10 +9,17 @@ export const PopupManager: React.FC = () => {
   const [activePopups, setActivePopups] = useState<Popup[]>([]);
   const navigate = useNavigate();
 
+  // KST(한국 표준시) 기준 오늘 날짜 구하기 (YYYY-MM-DD)
+  const getKSTDateString = () => {
+    const now = new Date();
+    const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
+    return kst.toISOString().split('T')[0];
+  };
+
   useEffect(() => {
     const fetchPopups = async () => {
       try {
-        const today = new Date().toISOString().split('T')[0];
+        const today = getKSTDateString();
         const q = query(
           collection(db, 'popups'),
           where('isVisible', '==', true)
@@ -22,7 +29,7 @@ export const PopupManager: React.FC = () => {
         
         snapshot.forEach((doc) => {
           const data = doc.data() as Popup;
-          // Client-side date filtering (since Firestore where with multiple inequality is tricky)
+          // Client-side date filtering
           if (data.startDate <= today && data.endDate >= today) {
             // Check if user dismissed it today
             const dismissedData = localStorage.getItem(`popup_dismissed_${doc.id}`);
@@ -43,7 +50,7 @@ export const PopupManager: React.FC = () => {
 
   const closePopup = (id: string, noShowToday: boolean) => {
     if (noShowToday) {
-      const today = new Date().toISOString().split('T')[0];
+      const today = getKSTDateString();
       localStorage.setItem(`popup_dismissed_${id}`, today);
     }
     setActivePopups(prev => prev.filter(p => p.id !== id));
@@ -68,7 +75,7 @@ export const PopupManager: React.FC = () => {
       <div className="absolute inset-0 bg-black/40 pointer-events-auto sm:hidden" />
       
       {activePopups.map((popup) => (
-        <div key={popup.id} className="relative z-10 w-[90vw] max-w-[400px] max-h-[85vh] bg-white rounded-[32px] border-4 border-brand-light shadow-[0_20px_50px_-12px_rgba(223,139,172,0.3)] overflow-hidden pointer-events-auto animate-fade-in-up m-auto sm:m-0 flex flex-col">
+        <div key={popup.id} className="relative z-10 w-[90vw] max-w-[400px] md:max-w-[500px] lg:max-w-[600px] max-h-[85vh] bg-white rounded-[32px] border-4 border-brand-light shadow-[0_20px_50px_-12px_rgba(223,139,172,0.3)] overflow-hidden pointer-events-auto animate-fade-in-up m-auto sm:m-0 flex flex-col">
           
           <div className="overflow-y-auto flex-1 w-full custom-scrollbar">
             {popup.imageUrl && (

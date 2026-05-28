@@ -2313,6 +2313,7 @@ const MedicalStaffPage: React.FC = () => {
 const CommunityPage: React.FC = () => {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchNotices = async () => {
@@ -2339,29 +2340,54 @@ const CommunityPage: React.FC = () => {
     fetchNotices();
   }, []);
 
+  const toggleNotice = (id: string) => {
+    setExpandedId(prev => (prev === id ? null : id));
+  };
+
   return (
     <div className="bg-brand-light min-h-screen py-12 lg:py-32 px-4 md:px-6">
-      <div className="max-w-[1200px] mx-auto space-y-10 md:space-y-20">
+      <div className="max-w-[1000px] mx-auto space-y-10 md:space-y-16">
         <div className="text-center space-y-4">
           <span className="text-brand-secondary font-black text-[10px] tracking-[0.4em] uppercase">Hospital News</span>
           <h2 className="text-xl md:text-3xl font-bold text-brand-primary">메디피아 소식</h2>
         </div>
-        <div className="space-y-6">
+        <div className="space-y-4">
           {loading ? (
             <div className="text-center py-20 text-brand-primary/50 font-bold">불러오는 중...</div>
           ) : notices.length > 0 ? (
-            notices.map((item) => (
-              <div key={item.id} className="bg-white p-5 md:p-10 rounded-[16px] md:rounded-[40px] border border-brand-primary/5 shadow-sm hover:shadow-xl transition-all group flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-8 hover-glow touch-scale">
-                <div className="space-y-3">
-                  <span className="text-[10px] font-black text-brand-secondary uppercase tracking-widest">{item.createdAt?.toDate?.().toLocaleDateString() || ''}</span>
-                  <h3 className="text-base md:text-xl font-black text-brand-primary group-hover:text-brand-secondary transition-colors">{item.title}</h3>
+            notices.map((item) => {
+              const isExpanded = expandedId === item.id;
+              return (
+                <div 
+                  key={item.id} 
+                  className="bg-white p-5 md:p-8 rounded-[16px] md:rounded-[24px] border border-brand-primary/5 shadow-sm hover:shadow-md transition-all group flex flex-col cursor-pointer"
+                  onClick={() => toggleNotice(item.id)}
+                >
+                  <div className="flex justify-between items-center w-full">
+                    <div className="space-y-2">
+                      <span className="text-[10px] font-black text-brand-secondary uppercase tracking-widest">{item.createdAt?.toDate?.().toLocaleDateString() || ''}</span>
+                      <h3 className="text-base md:text-lg font-bold text-brand-primary group-hover:text-brand-secondary transition-colors">{item.title}</h3>
+                    </div>
+                    <div>
+                      <ChevronRight className={`w-5 h-5 text-brand-primary/40 transition-transform duration-300 ${isExpanded ? 'rotate-90 text-brand-secondary' : ''}`} />
+                    </div>
+                  </div>
+                  
+                  {/* 본문 영역 (아코디언) */}
                   <div 
-                    className="text-brand-primary/80 font-medium text-sm leading-relaxed max-w-3xl quill-content" 
-                    dangerouslySetInnerHTML={{ __html: item.content }}
-                  />
+                    className={`grid transition-all duration-300 ease-in-out ${isExpanded ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0 mt-0'}`}
+                  >
+                    <div className="overflow-hidden">
+                      <div className="w-full h-[1px] bg-brand-primary/5 mb-6" />
+                      <div 
+                        className="text-brand-primary/80 font-medium text-sm md:text-base leading-relaxed max-w-none quill-content bg-[#FAF7F3] p-6 md:p-8 rounded-[16px]" 
+                        dangerouslySetInnerHTML={{ __html: item.content }}
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           ) : (
             <div className="text-center py-20 bg-white rounded-[20px] shadow-sm border border-brand-primary/5 text-brand-primary/50 font-bold">등록된 소식이 없습니다.</div>
           )}
